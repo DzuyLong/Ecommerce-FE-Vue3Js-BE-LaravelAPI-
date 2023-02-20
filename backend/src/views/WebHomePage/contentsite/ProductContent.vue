@@ -22,7 +22,7 @@
                         <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ml-3">5.0</span>
                     </div>
                     <div class="flex items-center flex-col justify-between">
-                        <span class="text-3xl font-bold mb-1 text-gray-900 dark:text-white"> {{ $filters.currencyUSD(product.price) }}</span>
+                        <span class="text-3xl font-bold mb-1 text-gray-900 dark:text-white"> {{ $filters.currencyVND(product.price) }}</span>
                         <button  class="text-white bg-amber-700 hover:bg-amber-800 
                         focus:ring-4 focus:outline-none focus:ring-amber-500 font-medium 
                         rounded-lg text-sm px-4 py-2 text-center hover:translate-y-[-1px] transition-all duration-400"
@@ -55,7 +55,7 @@
       }
       const isConfirm = ref(false);
     function addToCart(productId) {
-        store.dispatch("addToCart", productId).
+        store.dispatch("addToCart", {productId, quantity: 1}).
         then(async (response) => {
             isConfirm.value = true;
             await Swal.fire({
@@ -69,6 +69,7 @@
                      router.push({name: 'cartDetails'});
              }
         });
+        store.dispatch('getCart');
         }).catch(error => {
           console.error(error);
         });

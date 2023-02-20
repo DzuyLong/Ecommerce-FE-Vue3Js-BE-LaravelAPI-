@@ -20,5 +20,8 @@ class Customer extends Authenticatable
     public function cart() {
         return $this->hasOne(Cart::class , 'customer_id', 'id');
     }
-    
+    /* Một Customer sẽ có nhiều địa chỉ nhận hàng */
+    public function customerAddresses() {
+      return $this->hasMany(CustomerAddress::class , 'customer_id', 'id');
+  }
 }

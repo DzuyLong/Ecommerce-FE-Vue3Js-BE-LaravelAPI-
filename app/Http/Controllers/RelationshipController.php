@@ -9,9 +9,13 @@ use App\Models\ProductCategory;
 use App\Models\Order;
 use App\Models\Cart;
 use App\Models\Customer;
+use App\Models\CustomerAddress;
 use App\Models\Order_detail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Province;
+use App\Models\District;
+use App\Models\Ward;
 class RelationshipController extends Controller
 {
     public function product (){
@@ -22,18 +26,9 @@ class RelationshipController extends Controller
         
     }
     public function order (Request $request){
-        // $query = Cart::find(1);
-        // foreach ($query->products as $queryy){
-        //     echo $queryy->pivot->quantity . "<br>";
-        // }
-        // dd($query->cart);
-        //  $query = Cart::find(1);
-        //  $query->products()->sync([
-        //     8 => ['quantity' => 12],
-        //  ]);
-        //  return redirect('/relationship/order');
-       
-        dd($request->user());
+     $customer = Customer::find(103);
+     $address = $customer->customerAddresses;
+     dd($address);
         
     }
 }

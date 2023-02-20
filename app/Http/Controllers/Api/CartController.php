@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\Api\Product;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Facades\URL;
 class CartController extends Controller
 {
-    public function addCart(Product $product) {
+    public function addCart(Request $request) {
         // Lấy thông tin khách hàng đăng nhập
         $customer = Auth::user();
         // Lấy giỏ hàng của khách hàng
@@ -33,13 +34,16 @@ class CartController extends Controller
         Nó kiểm tra xem một đối tượng cụ thể có nằm trong tập hợp hay không.
         Nếu đối tượng đó có trong tập hợp, phương thức sẽ trả về giá trị true,
         ngược lại nếu đối tượng đó không có trong tập hợp thì phương thức sẽ trả về giá trị false.*/
+        $productId = $request->productId;
+        $quantity = $request->quantity;
+        $product = Product::find($productId);
         if (!$cart->products->contains($product->id)) {   
             $cart->products()->syncWithoutDetaching([
-                $product->id => ['quantity' => 1],
+                $product->id => ['quantity' => $quantity],
             ]);
         }else{
             $pivot = $cart->products()->where('product_id', $product->id)->first()->pivot;
-            $pivot->quantity += 1;
+            $pivot->quantity += $quantity;
             $pivot->save();
         }
 
@@ -52,6 +56,56 @@ class CartController extends Controller
         $cart = $customer->cart;
         
         return response()->json($cart->products);
+    }
+    public function updateCartQuantity(Request $request) {
+        $productId = $request->productId;
+        $quantity = $request->newQuantity;
+        $quantityValue  = $request->newQuantityValue;
+        $customer = Auth::user();
+        $cart = $customer->cart;
+        $pivot = $cart->products()->where('product_id', $productId)->first()->pivot;
+
+        if(!$quantityValue){
+            $quantityValue = 1;
+            $pivot->quantity = $quantityValue;
+            $pivot->save();
+        } 
+        
+        if ($quantityValue){
+            $pivot->quantity =  $quantityValue;
+            $pivot->save();
+        }
+        
+        if($quantity) {
+            $pivot->quantity = $quantity;
+            $pivot->save();
+        }
+       
+        return response()->json([
+            'quantityValue' => $quantityValue,
+            'quantity' => $quantity,
+        ]);
+       
+    }
+
+    public function removeFromCart(Request $request) {
+        $productId = $request->id;   
+        // tìm giỏ hàng customer hiện tại
+        $customer = Auth::user();
+        $cart = $customer->cart;
+
+        $pivot = $cart->products()->where('product_id', $productId)->first()->pivot;
+        if($pivot) {
+            // xóa sản phẩm bản gi pivot
+            $pivot->delete();
+            return response()->json([
+                'message' => 'Product removed from cart',
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Product not found in cart',
+            ],404);
+        }
     }
     
 }

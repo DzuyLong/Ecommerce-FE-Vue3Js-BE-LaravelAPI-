@@ -15,6 +15,9 @@ import LoginCustomer  from '../views/WebHomePage/logincustomer/LoginCustomer.vue
 import RegisterCustomer  from '../views/WebHomePage/logincustomer/RegisterCustomer.vue';
 import Cart from '../components/Cart.vue';
 import ProductDetails from '../views/WebHomePage/productdetails/ProductDetails.vue';
+import CustomerProfileLayout from '../components/CustomerProfileLayout.vue';
+import Profile from '../views/Customer_profile/Profile.vue';
+import  Address_Customer from '../views/Customer_profile/Address_Customer.vue';
     const routes = [
           {
             path: '/admin',
@@ -92,6 +95,37 @@ import ProductDetails from '../views/WebHomePage/productdetails/ProductDetails.v
             name: 'cartDetails',
             component: Cart,
           },
+
+          {
+            path: '/customer',
+            name: 'customer',
+            redirect: '/customer/profile',
+            component: CustomerProfileLayout,
+            
+            children: [
+              {
+                path: 'profile',
+                name: 'customer.profile',
+                component: Profile
+              },
+              {
+                path: 'address',
+                name: 'customer.address',
+                component: Address_Customer
+              },
+                      
+            ]
+          },
+
+
+
+
+
+
+
+
+
+
           {
             path: '/:slug',
             name: 'ProductDetails',

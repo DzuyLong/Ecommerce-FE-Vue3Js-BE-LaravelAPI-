@@ -37,18 +37,36 @@
             <div class="user-details"><h1 class="text-amber-400 font-semibold">{{ CurrentCustomer.last_name }} {{ CurrentCustomer.first_name }}</h1></div>
           </div>
           <router-link :to="{name:'cartDetails'}">
-            <div class="cart-nav flex">
-              <i class="bi bi-cart3 text-[23px] hover:text-[25px]"></i>
+           
+            <div class="cart-nav flex relative" @mouseenter="hover = true" @mouseleave="hover = false">
+              <i class="bi bi-cart3 text-[23px] hover:text-[25px]" ></i>
               <div class="w-8 h-5 leading-4  bg-amber-300 hover:leading-5 hover:w-10 hover:h-6 text-center rounded-full relative -top-1 right-2 border">
                 <span class="text-black text-[15px]  font-mono  font-semibold">{{ getCountPd }}</span>
               </div>
+              <Transition name="scale">
+              <div v-if="hover" class="max-h-[395px] w-[400px] rounded-sm shadow-xl font-mono bg-white absolute -left-[23rem] top-[35px] overflow-auto">
+                <div class="text-top-cart p-[10px]"><h1 class="text-neutral-500">Sản phẩm mới thêm</h1></div>
+                  <div class="flex p-3 justify-between shadow-md" v-for="(cart, index) in carts" :key="index">
+                    <img class="border border-amber-400 shadow-2xl rounded-sm w-24 h-[4rem] object-fill inline"  :src="`http://localhost:8000/uploads/images/${cart.image}`"  :alt="cart.title">
+                    <div class="">
+                      <span><h1 class="text-black">{{ cart.title }}</h1></span>
+                    </div>
+                    <div class="">
+                      <span><h1 class="text-red-600">{{ $filters.currencyVND(cart.price * cart.pivot.quantity) }}</h1></span>
+                    </div>
+                  </div>
+              </div>
+            </Transition>
             </div>
+      
           </router-link>
           </div>
           <transition name="fade-in-down">
           <div v-if="dropCustomer" class="popover-inner bg-gray-100 rounded-sm absolute right-2 shadow-2xl top-9 z-50 ">
               <div class="user-dropdown min-w-[200px]  text-black">
+                <router-link :to="{name: 'customer'}">
                 <div class="menu-item font-mono px-1 py-1 mx-1 my-1 hover:bg-neutral-300 hover:font-semibold transition-all duration-250 ease-in" role="button">Profile</div>
+              </router-link>
                 <div class="border-b border-gray-300 px-1"></div>
                 <div class="menu-item font-mono px-1 py-1 mx-1 my-1 hover:bg-neutral-300 hover:font-semibold transition-all duration-250 ease-in" @click="logoutCustomer" role="button">
                   Log out
@@ -70,11 +88,12 @@
   <script setup>
   import Button from '../WebHomePage/button.vue'
   import store from "../../store";
-  import {ref, computed, onMounted ,onBeforeMount} from 'vue'
+  import {ref, computed, onMounted , onUnmounted, onBeforeMount} from 'vue'
   import router from "../../router";
   import vueClickOutsideElement from 'vue-click-outside-element'
   const openNavbar = ref(false);
   const dropCustomer = ref(false);
+  const hover = ref(false);
   const popup = ref(null)
   const navigation = [
     { name: 'Home', to: {name: 'homepage'} },
@@ -85,22 +104,29 @@
   return  store.getters.productCount
 }
 );
+const carts = computed(() => store.state.customer.cartData);
   // const CurrentCustomer = computed(() => store.state.customer.data);
   const  CurrentCustomer = ref({});
   onMounted (() => {
     if(store.state.customer.token){
       // store.dispatch('getCurrentCustomer');
       getCurrentCustomer();
+      store.dispatch('getCart');
     } 
  // Mouted sự kiện cho việc click outside phần drop down customer
-    document.addEventListener('click', (event) => {
-        if (!popup.value.contains(event.target)) {
-          dropCustomer.value = false;
-        }else{
-          dropCustomer.value = true;
-        }
-      })
+ /*nếu event.target là null hoặc undefined, hoặc nếu popup.value là null hoặc undefined, 
+ hoặc nếu popup.value.contains là null hoặc undefined, biểu thức sẽ trả về false và không 
+ thực hiện các lệnh bên trong if block. Nếu tất cả các biến tồn tại và là giá trị hợp lệ, 
+ biểu thức sẽ trả về true và thực hiện các lệnh bên trong if block. */
+ document.addEventListener('click', (event) => {
+  if (event.target && popup.value && popup.value.contains) {
+    if (!popup.value.contains(event.target)) {
+      dropCustomer.value = false;
+    }
+  }
+});
   })
+
   function getCurrentCustomer() { 
         store.dispatch("getCurrentCustomer").
         then(({data}) => {
@@ -119,10 +145,44 @@
   </script>
 
   <style scoped>
+.scale-enter-active{
+  animation: Enter 0.5s;
+}
+.scale-leave-active{
+  animation: Leave 0.2s;
+}
+@keyframes Enter {
+  from {
+    transform: translate3d(0, -5%, 0);
+    /* transform-origin: right top;
+    transform: scale(0); */
+    opacity: 0;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+    /* transform: scale(1); */
+    opacity: 1;
+  }
+}
+@keyframes Leave {
+  from {
+    transform: translate3d(0, 0, 0);
+
+    opacity: 1;
+  }
+
+  to {
+    transform: translate3d(0, -5%, 0);
+
+    opacity: 0;
+  }
+}
+
+
 .fade-in-down-enter-active {
   animation: fadeInDown 0.4s;
 }
-
 @keyframes fadeInDown {
   from {
     transform: translate3d(0, -5%, 0);

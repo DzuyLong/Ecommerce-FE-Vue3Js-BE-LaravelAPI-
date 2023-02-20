@@ -19,6 +19,7 @@
     "flowbite": "^1.6.1",
     "flowbite-vue": "^0.0.10",
     "mdb-ui-kit": "^6.1.0",
+    "smoothscroll-polyfill": "^0.4.4",
     "sweetalert2": "^11.7.1",
     "swiper": "^8.4.5",
     "toastr": "^2.1.4",

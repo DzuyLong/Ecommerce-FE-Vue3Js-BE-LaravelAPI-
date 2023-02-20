@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProductInventoryController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\IndexConCustomerProfileControllertroller;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -41,8 +42,15 @@ Route::middleware(['customerOrVerified'])->group(function () {
 Route::middleware(['auth:sanctum','customerVerified'])->group(function () {
     Route::get('/customer', [\App\Http\Controllers\Api\CustomerController::class, 'getCustomer']);
     Route::post('/logoutCustomer', [\App\Http\Controllers\Api\CustomerController::class, 'logoutCustomer']);
-    Route::post('add-cart/{product}',[\App\Http\Controllers\Api\CartController::class, 'addCart']);
+    Route::post('add-cart',[\App\Http\Controllers\Api\CartController::class, 'addCart']);
     Route::post('get-cart',[\App\Http\Controllers\Api\CartController::class, 'Cart']);
+    Route::post('update-cart-quantity',[\App\Http\Controllers\Api\CartController::class, 'updateCartQuantity']);
+    Route::post('remove-from-cart',[\App\Http\Controllers\Api\CartController::class, 'removeFromCart']);
+    Route::get('fetch-provinces',[\App\Http\Controllers\Api\CustomerProfileController::class, 'fetchProvinces']);
+    Route::get('fetch-districts/{idProvince}',[\App\Http\Controllers\Api\CustomerProfileController::class, 'fetchDistricts']);
+    Route::get('fetch-wards/{idDistrict}',[\App\Http\Controllers\Api\CustomerProfileController::class, 'fetchWards']);
+    Route::post('add-address',[\App\Http\Controllers\Api\CustomerProfileController::class, 'addAddress']);
+    Route::get('get-address',[\App\Http\Controllers\Api\CustomerProfileController::class, 'getAddress']);
 });
 Route::post('/loginCustomer', [\App\Http\Controllers\Api\CustomerController::class, 'loginCustomer']);
 Route::post('/registerCustomer', [\App\Http\Controllers\Api\CustomerController::class, 'registerCustomer']);

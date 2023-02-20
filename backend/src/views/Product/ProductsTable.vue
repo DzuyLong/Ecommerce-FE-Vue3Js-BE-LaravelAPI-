@@ -72,7 +72,7 @@
             {{ product.title }}
           </td>
           <td class="border-b p-2">
-            {{ $filters.currencyUSD(product.price) }}
+            {{ $filters.currencyVND(product.price) }}
           </td>
           <td class="border-b p-2 ">
            {{ product.published === true ? 'Public' : 'UnPublic' }}

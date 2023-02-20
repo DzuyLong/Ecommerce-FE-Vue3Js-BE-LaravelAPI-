@@ -3,7 +3,7 @@ import './index.css'
 import store from './store';
 import router from './router';
 import App from './App.vue'
-import currencyUSD from './filters/currency.js'
+import currencyVND from './filters/currency.js'
 const app = createApp(App);
 
 app
@@ -14,5 +14,5 @@ app
 
 
 app.config.globalProperties.$filters = {
-    currencyUSD
+  currencyVND
   }

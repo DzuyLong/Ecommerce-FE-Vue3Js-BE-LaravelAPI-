@@ -11,6 +11,7 @@
       </div>
       </section>
     </main>
+         <ButtonScroll></ButtonScroll>
   </div>
 </template>
 
@@ -22,9 +23,13 @@ import ProductContent from '../../src/views/WebHomePage/contentsite/ProductConte
 import Navbar from '../views/WebHomePage/Navbar.vue'
 import Slider from '../../src/views/WebHomePage/contentsite/Slider.vue'
 import ContentLeft from '../../src/views/WebHomePage/contentsite/ContentLeft.vue'
+import ButtonScroll from '../../src/views/button/buttonScroll.vue'
 const route = useRoute();
-
+const showButtonScroll = ref(false);
 onMounted(() => {
+  if(store.state.customer.token) {
     store.dispatch('getCart');
+  }  
 });
+
 </script>

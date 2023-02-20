@@ -84,8 +84,8 @@ export function getCategorySingle({commit}, slug) {
   return axiosCustomer.get(`/danh-muc/${slug}`)
   
 }
-export function addToCart({commit}, productId) {
-  return axiosCustomer.post(`/add-cart/${productId}`)
+export function addToCart({commit}, data) {
+  return axiosCustomer.post(`/add-cart`,data);
   
 }
 export function getCart({commit}) {
@@ -97,6 +97,29 @@ export function getCart({commit}) {
 export function ProducDetail({commit}, slug) {
   return axiosCustomer.get(`/product-detail/${slug}`)
   
+}
+export function UpdateCartQuantity({commit}, data) {
+  return axiosCustomer.post(`/update-cart-quantity`, data)
+  
+}
+export function removeFromCart({commit}, data) {
+  return axiosCustomer.post(`/remove-from-cart`, data);
+  
+}
+export function fetchProvinces({commit}, data) {
+  return axiosCustomer.get(`/fetch-provinces`, data);
+}
+export function fetchDistricts({commit}, idProvince) {
+  return axiosCustomer.get(`/fetch-districts/${idProvince}`);
+}
+export function fetchWards({commit}, idDistrict) {
+  return axiosCustomer.get(`/fetch-wards/${idDistrict}`);
+}
+export function addAddress({commit}, data) {
+ return axiosCustomer.post(`/add-address`, data);
+}
+export function getAddress({commit}) {
+  return axiosCustomer.get(`/get-address`, data);
 }
 // ------------------endCusstomer------------
   export function getProducts({commit, state}, {url = null, search = '', per_page, sort_field, sort_direction} = {}) {

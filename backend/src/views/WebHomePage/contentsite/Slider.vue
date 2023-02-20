@@ -34,7 +34,7 @@
             </button>
             </div>
             <div class="absolute top-0 right-0 bottom-0 left-0 z-10">
-                <h1 class="bg-slate-900/50 px-4  text-price md:text-4xl text-2xl top-1 left-4 text-amber-400 absolute md:left-4 font-extrabold">{{ $filters.currencyUSD(product.price) }}</h1>
+                <h1 class="bg-slate-900/50 px-4  text-price md:text-4xl text-2xl top-1 left-4 text-amber-400 absolute md:left-4 font-extrabold">{{ $filters.currencyVND(product.price) }}</h1>
                 <div class="absolute bottom-0 left-4">
                 <h1 class="text-title md:text-4xl text-2xl text-white font-semibold">{{ product.title }}</h1>
                 <div class="rating flex items-center gap-1 md:gap-3 mt-1 mb-2">

@@ -8,43 +8,103 @@
           <th>Quantity</th>
           <th>Unit Price</th>
           <th>Total Price</th>
+          <th>Thao Tác</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(cart, index) in carts" :key="index" class="text-center font-mono text-xl  ">
+        
+        <tr v-for="(cart, index) in carts" :key="index" class="text-center font-mono text-xl relative ">
+          <Spinner text="Removing..." v-if="cart.remove"   class="absolute justify-center h-full w-full bg-white z-50 block "/>
             <td><img class="w-36 h-[8rem] object-fill inline" :src="`http://localhost:8000/uploads/images/${cart.image}`"  :alt="cart.title"></td>
             <td>{{ cart.title }}</td>
-            <td>{{ cart.pivot.quantity }}</td>
-            <td> {{ $filters.currencyUSD(cart.price) }}</td>
-            <td class="text-red-600"> {{ $filters.currencyUSD(cart.price * cart.pivot.quantity) }}</td>
+            <td> 
+            <div class="flex justify-center items-center">
+              <div class="flex relative  items-center border rounded-md w-[160px] h-[50px] bg-white">
+                <button  @click="decrementValue(cart, cart.id, cart.pivot.quantity)" class="btn-decrementValue h-full w-full border-r-[1px]">
+                <span class="sp-btn-minus inline-block"><i class="bi bi-dash-lg cursor-pointer text-black text-2xl"></i></span>
+              </button>
+                <div class="text-field-value-quantity h-full w-full flex items-center">
+                  <Spinner text="" v-if="cart.loading" class=" text-center h-[36px] w-[100%] ml-1 text-field-input p-[3px]"/>
+                  <input v-else  @blur="updateValueQuantity(cart, cart.id, cart.pivot.quantity)" v-model="cart.pivot.quantity" class="h-[36px] mx-1 w-[45px] text-center text-field-input p-[6px] font-semibold"/>
+                  <!-- blur là một sự kiện HTMl nó work khi một phần từ bị mất focus(click ra ngoài hoặc sử dụng tab) -->
+                </div>
+                <button @click="incrementValue(cart, cart.id, cart.pivot.quantity)" class="btn-incrementValue h-full w-full border-l-[1px]">
+                <span class="sp-btn-plus inline-block"><i class="bi bi-plus-lg cursor-pointer text-black text-2xl"></i></span>
+                </button>
+            </div>
+          </div>
+            </td>
+            <td> {{ $filters.currencyVND(cart.price) }}</td>
+            <td class="text-red-600"> {{ $filters.currencyVND(cart.price * cart.pivot.quantity) }}</td>
+            <td><div class=""><i @click="removeProductFromCart(cart)" class="bi bi-x-circle text-3xl cursor-pointer hover:text-red-600"></i></div></td>
         </tr>
+      
       </tbody>
     </table>
+    <ButtonScroll />
   </div>
 </template>
 
 <script setup>
+import Spinner from "../../../components/core/Spinner.vue";
 import store from '../../../store';
-import {computed, onMounted, ref} from "vue";
-// const cart = ref({});
+import ButtonScroll from '../../../views/button/buttonScroll.vue'
+import {computed, onMounted, ref, watch , toRefs} from "vue";
 const carts = computed(() => store.state.customer.cartData);
 onMounted(() => {
     // getCart();
-    store.dispatch('getCart');
-});
-
-// function getCart() {
-//             store.dispatch('getCart').
-//             then(response => {
-//                 cart.value = response.data;
-//                 console.log(cart.value);
-//             }).catch(error => {
-//           console.error(error);
-//         });
-//         }
-// const productCount = computed(() => {
-//   const uniqueProducts = new Set(cart.value.map(item => item.id))
-//   return uniqueProducts.size
-// });
-
+    if(store.state.customer.token) {
+      store.dispatch('getCart');
+    }      
+})
+function updateValueQuantity(cart, productId, newQuantityValue) {
+  cart.loading = true;
+  if(!cart.pivot.quantity) {
+    cart.pivot.quantity = 1;
+  }
+  store.dispatch('UpdateCartQuantity', {productId,  newQuantityValue: Number(newQuantityValue)}).
+  then( response => {
+      cart.loading = false;
+      console.log(response);
+  })
+}
+function incrementValue(cart, productId, newQuantity) {
+  cart.loading = true;
+  store.dispatch('UpdateCartQuantity', {productId, newQuantity: Number(newQuantity) + 1}).
+  then( response => {
+    cart.loading = false;
+     cart.pivot.quantity++;
+      console.log(response);
+  })
+}
+function decrementValue(cart, productId, newQuantity) {
+  cart.loading = true;
+  store.dispatch('UpdateCartQuantity', {productId, newQuantity: Number(newQuantity) - 1}).
+  then( response => {
+    cart.loading = false;
+    if (cart.pivot.quantity > 1) {
+      cart.pivot.quantity--;
+    }
+      console.log(response);
+  })
+}
+ function removeProductFromCart(cart) {
+  cart.remove = true;
+    store.dispatch('removeFromCart', cart).
+    then( response => {
+      cart.remove = true;
+      store.dispatch('getCart');
+    })
+ }
 </script>
+
+<style scoped>
+.btn-decrementValue:hover .sp-btn-minus {
+  transform: translateY(-1px);
+  color: black;
+}
+.btn-incrementValue:hover .sp-btn-plus {
+  transform: translateY(-1px);
+  color: black;
+}
+</style>
