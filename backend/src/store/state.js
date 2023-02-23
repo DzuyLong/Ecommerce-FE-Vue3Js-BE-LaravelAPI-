@@ -6,7 +6,7 @@ export default {
     customer: {
       token: sessionStorage.getItem('BuyerToken'),
       data: {},
-      cartData:{},
+      cartData:[],
     },
     productCategory: {
       loading: false,

@@ -1,6 +1,6 @@
 <template>
     <div class="relative box-border ml-3 min-w-0 bg-white shadow-xl rounded-md flex-grow font-mono">
-        <div class="flex flex-col relative min-h-full">
+        <div class="flex flex-col relative max-h-[585px] overflow-auto">
             <div class="contents">
                 <div class="flex flex-col">
                     <div class="p-5 box-border border-b-[1px] border-neutral-200 flex items-center">
@@ -8,13 +8,13 @@
                         <div class="font-semibold text-2xl text-black">My Address</div>
                     </div>
                     <div class="flex">
-                        <button @click="showModalValue(true)" class="bg-amber-400 leading-[45px] px-4 text-neutral-600 hover:text-black hover:translate-y-[-1px] transition-all duration-150 ease-in">
+                        <button @click="showModalAddAddressValue(true)" class="bg-amber-400 leading-[45px] px-4 text-neutral-600 hover:text-black hover:translate-y-[-1px] transition-all duration-150 ease-in">
                             <div class="flex">
                                 <i class="bi bi-plus text-2xl"></i>
                                 <span>Thêm địa chỉ mới</span>
                             </div>                                                                       
                         </button>
-                        <Modal :showModal="showModal" @close-modal="closeModal" title="New Address">
+                        <Modal :showModal="showModal" @close-modal="closeModalAddAddress" title="New Address">
                             <div class="col-span-12 text-center">
                                 <div class="errMsg mb-3">
                                     <span class="text-red-600">{{ errMsg }}</span>
@@ -65,16 +65,41 @@
                     </div>
                 </div>
 
-                    <div class="w-full h-[125px] p-5">
+                    <div class="w-full p-5">
                         <div class="title-address text-center mb-3"><span class="text-xl font-semibold">Địa Chỉ</span></div>
-                        <div class="flex flex-col">
-                            <div class="">
-                                <span>FullName</span>
+                        <div v-for="(Address, index) in Addresses" :key="Address.id" class="flex shadow-sm justify-between items-start">
+                        <div  class="flex flex-col gap-3 p-4 border-b-[1px] border-neutral-200">                           
+                            <div class=" flex gap-3 items-end">                              
+                                <span class="text-xl">{{ Address.fullname }}</span>
+                                <span class="text-neutral-600">|</span>
+                                <span class="text-neutral-600">{{ Address.telephone }}</span>
+                            </div>
+                            <div class="flex gap-2 items-center text-neutral-600">
+                                <span >{{ Address.province.name}}</span>
+                                <span><i class="bi bi-dash-lg"></i></span>
+                                <span>{{ Address.district.name}}</span>
+                                <span><i class="bi bi-dash-lg"></i></span>
+                                <span>{{ Address.ward.name}}</span>
                             </div>
                             <div class="">
-                                <span>Địa chỉ chi tiết</span>
+                                <span class="text-neutral-600" >{{ Address.details_address }}</span>
+                            </div>
+                        
+                        </div>
+                        <div class="p-4 flex flex-col gap-3">
+                            <div @click="showModelUpdateAddress(true)" class="div_update_adr flex items-center gap-2 cursor-pointer">
+                                <i class="bi bi-pencil-square text-xl "></i>
+                                <span class="text-neutral-600">Cập Nhật</span>                          
+                            </div>
+                            <Modal :showModal="ModelUpdateAddress" @close-modal="closeModalUpdateAddress" title="Cập nhật địa chỉ">
+                                
+                            </Modal>
+                            <div @click="deleteAddress(Address.id)" class=" div_del_adr flex items-center gap-2 cursor-pointer">
+                                <i class="bi bi-x-circle text-xl"></i>
+                                <span class="text-neutral-600">Xóa</span>
                             </div>
                         </div>
+                    </div>
                     </div>
 
                 </div>
@@ -89,13 +114,16 @@ import {computed,onMounted, onUpdated, ref, watch} from 'vue'
 import Modal from './Modal_Address.vue'
 import store from '../../store';
 const showModal = ref(false)
-   function showModalValue(value) {
+   function showModalAddAddressValue(value) {
     showModal.value = value;
-    console.log(showModal.value);
    }
+const ModelUpdateAddress = ref(false);
+function showModelUpdateAddress(value) {
+    ModelUpdateAddress.value = value;
+}
 onMounted(() => {
     fetchProvinces();
-    store.dispatch('getAddress');
+    getAddress();
 })
 const Provinces = ref('');
 const Districts = ref('');
@@ -136,7 +164,7 @@ const selectedWard = ref("");
  
   }
   const errMsg = ref('');
-  function closeModal() {
+  function closeModalAddAddress() {
         showModal.value = false;
         infoAddress.fullName = "";
         infoAddress.phoneNumber = "";
@@ -147,21 +175,33 @@ const selectedWard = ref("");
         Districts.value = '';
         Wards.value = '';
     }
+    function closeModalUpdateAddress() {
+        ModelUpdateAddress.value = false;
+    }
  function saveAdress() {
     store.dispatch('addAddress', {fullName: infoAddress.fullName, phoneNumber:infoAddress.phoneNumber, addressDetail:infoAddress.addressDetail, province: selectedProvice.value,district: selectedDistrict.value,ward: selectedWard.value}).
     then( response => {
         console.log(response);
-        closeModal();
+        closeModalAddAddress();
+        getAddress();
     }).catch(({ response }) => {
         errMsg.value = response.data.message;
       })
  }
-//  function getAddress() {
-//     store.dispatch('getAddress').
-//     then(response => {
-//         console.log(response.data);
-//     })
-//  }
+ const Addresses = ref({});
+ function getAddress() {
+    store.dispatch('getAddress').
+    then(response => {
+        Addresses.value = response.data.getAddress;
+    })
+ }
+ function deleteAddress(AddressId) {
+    store.dispatch('deleteAddress', AddressId).
+    then(response => {
+        getAddress();
+        console.log(response.data);
+    });
+ }
 </script>
 <style scoped>
 .text-color {
@@ -172,4 +212,23 @@ const selectedWard = ref("");
     color: linen;
     opacity: 1;
 }
+.div_update_adr:hover i {
+    transition: all 0.2s ease-in;
+    transform: translateY(-2px);
+    color: #fbbf24c7;
+}
+.div_update_adr:hover span {
+    transition: all 0.2s ease-in;
+    color: black;
+}
+.div_del_adr:hover i {
+    transition: all 0.2s ease-in;
+    transform: translateY(-2px);
+    color: red;
+}
+.div_del_adr:hover span {
+    transition: all 0.2s ease-in;
+    color: black;
+}
+
 </style>

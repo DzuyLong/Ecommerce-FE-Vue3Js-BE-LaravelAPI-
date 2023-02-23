@@ -51,6 +51,9 @@ Route::middleware(['auth:sanctum','customerVerified'])->group(function () {
     Route::get('fetch-wards/{idDistrict}',[\App\Http\Controllers\Api\CustomerProfileController::class, 'fetchWards']);
     Route::post('add-address',[\App\Http\Controllers\Api\CustomerProfileController::class, 'addAddress']);
     Route::get('get-address',[\App\Http\Controllers\Api\CustomerProfileController::class, 'getAddress']);
+    Route::delete('delete-address/{addressId}',[\App\Http\Controllers\Api\CustomerProfileController::class, 'deleteAddress']);
+    Route::post('update-profile',[\App\Http\Controllers\Api\CustomerProfileController::class, 'updateProfile']);
+    Route::post('checkout',[\App\Http\Controllers\Api\CustomerProfileController::class, 'checkout']);
 });
 Route::post('/loginCustomer', [\App\Http\Controllers\Api\CustomerController::class, 'loginCustomer']);
 Route::post('/registerCustomer', [\App\Http\Controllers\Api\CustomerController::class, 'registerCustomer']);

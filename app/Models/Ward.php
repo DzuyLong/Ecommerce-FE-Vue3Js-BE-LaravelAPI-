@@ -13,7 +13,10 @@ class Ward extends Model
     protected $fillable = ['code', 'name', 'name_en','full_name','full_name_en', 'code_name','district_code'];
     protected $primaryKey = 'code';
     // tạo các mối quan hệ cho Wards
-
+    // Một xã/Phường (ward) có thể có trong nhiều địa chỉ của khách hàng (customer_address) tương ứng.
+    public function customerAddresses() {
+        return $this->hasMany(CustomerAddress::class, 'ward_code', 'code');
+    }
   
     public function district()
     {

@@ -119,8 +119,18 @@ export function addAddress({commit}, data) {
  return axiosCustomer.post(`/add-address`, data);
 }
 export function getAddress({commit}) {
-  return axiosCustomer.get(`/get-address`, data);
+  return axiosCustomer.get(`/get-address`);
 }
+export function deleteAddress({commit}, AddressId) {
+  return axiosCustomer.delete(`/delete-address/${AddressId}`);
+}
+export function updateProfile({commit}, data) {
+  return axiosCustomer.post(`/update-profile`,data);
+}
+export function checkout({commit}, data) {
+  return axiosCustomer.post(`/checkout`,data);
+}
+
 // ------------------endCusstomer------------
   export function getProducts({commit, state}, {url = null, search = '', per_page, sort_field, sort_direction} = {}) {
     commit('setProducts', [true])

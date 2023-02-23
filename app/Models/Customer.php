@@ -12,7 +12,7 @@ class Customer extends Authenticatable
   use HasApiTokens, HasFactory, Notifiable;
     protected $guard = 'customer';
     protected $table = 'customers';
-    protected $fillable = ['username','password','first_name','last_name','telephone','created_at','updated_at'];
+    protected $fillable = ['username','password','first_name','email','gioitinh','ngaysinh','last_name','telephone','created_at','updated_at'];
     protected $hidden = [
       'password',
   ];
